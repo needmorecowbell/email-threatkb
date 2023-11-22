@@ -1,0 +1,12 @@
+name = "eml-funnel"
+main = "src/index.js"
+compatibility_date = "2023-11-22"
+account_id = "" 
+kv_namespaces = [
+  { binding = "KV", id = "" }
+]
+[vars]
+VAULT_EMAIL = "vault@domain.com"
+PASSTHROUGH_EMAIL = "passthrough@domain.com"
+PROCESSOR_SCHEMA = "https"
+PROCESSOR_HOST = "processor.domain.com"

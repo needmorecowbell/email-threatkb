@@ -1,0 +1,29 @@
+POST http://127.0.0.1:6000/scan
+
+Delivered-To: lao@gmail.com
+From: crera <3@gmail.com>
+Date: Wed, 22 Nov 2023 01:55:34 -0500
+Message-ID: <CAAel.gmail.com>
+Subject: testing
+To: test@test.net
+Content-Type: multipart/alternative; boundary="00000000000057480b060ab8358d"
+
+--00000000000057480b060ab8358d
+Content-Type: text/plain; charset="UTF-8"
+
+this one should get through for sure
+
+--00000000000057480b060ab8358d
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr">this one should get through for sure<br>
+...oohhhh....
+
+malicious_pattern
+
+...spooky....
+</div>
+
+
+
+--00000000000057480b060ab8358d--
