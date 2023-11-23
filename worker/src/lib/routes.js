@@ -1,14 +1,23 @@
+
 import Router from "./router"
 import endpointIndex from "../endpoints"
+import { endpointMappingAdd } from "../endpoints/endpoint_mapping_add"
 import { NotFoundResponse } from "./responses"
 
+/**
+ * Handles incoming requests and routes them to the appropriate endpoint.
+ * @param {Request} request - The incoming request object.
+ * @param {Object} env - The environment object.
+ * @returns {Promise<Response>} - The response object.
+ */
 export async function handleRequest(request, env) {
-    const router = new Router()
-  
-    router.get('/', () => endpointIndex(request))
-    router.all(() => { return NotFoundResponse() })
-  
-    const response = await router.route(request)
-    return response
-  }
-  
+  const router = new Router()
+
+  router.get('/', () => endpointIndex(request));
+  router.post('/mapping/add', () => endpointMappingAdd(request, env));
+  router.all(() => { return NotFoundResponse() })
+
+  const response = await router.route(request)
+  return response
+}
+

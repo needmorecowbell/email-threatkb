@@ -1,7 +1,8 @@
 /**
  * handleEmail is the top-level function for any emails that are forwarded to the function. It will ultimately choose to drop or forward based off of what it thinks of the metadata.
- * @param {*} message 
- * @param {*} env 
+ * @param {*} message - The email message object.
+ * @param {*} env - The environment object.
+ * @returns {Promise<void>} - A promise that resolves when the email handling is complete.
  */
 export async function handleEmail(message, env) {
     const init = {
@@ -9,7 +10,6 @@ export async function handleEmail(message, env) {
         body: message.raw,
         headers: {
             "content-type": "application/json;charset=UTF-8",
-
         }
     };
 
@@ -21,7 +21,8 @@ export async function handleEmail(message, env) {
 /**
  * gatherResponse awaits and returns a response body as a string.
  * Use await gatherResponse(..) in an async function to get the response body
- * @param {Response} response
+ * @param {Response} response - The response object.
+ * @returns {Promise<string>} - A promise that resolves with the response body as a string.
  */
 export async function gatherResponse(response) {
     const { headers } = response;
@@ -33,18 +34,26 @@ export async function gatherResponse(response) {
 }
 
 /**
- * handleMetadata takes the metadata response and analyzes it to determine if the message will ultimately be forwarded
- * @param {object} metadata
- * @param message
+ * handleMetadata takes the metadata response and analyzes it to determine if the message will ultimately be forwarded.
+ * @param {object} metadata - The metadata object.
+ * @param {object} message - The email message object.
+ * @returns {Promise<void>} - A promise that resolves when the metadata handling is complete.
  */
 export async function handleMetadata(metadata, message) {
     if (metadata.status === "malicious") {
-        await message.forward(VAULT_EMAIL)
+        await message.forward(VAULT_EMAIL);
     } else {
-        await message.forward(PASSTHROUGH_EMAIL)
+        await message.forward(PASSTHROUGH_EMAIL);
     }
 }
 
-export async function buildURL(schema,host,path){
-    return `${schema}://${host}/${path}`
+/**
+ * buildURL constructs a URL based on the provided schema, host, and path.
+ * @param {string} schema - The URL schema (e.g., "http" or "https").
+ * @param {string} host - The URL host.
+ * @param {string} path - The URL path.
+ * @returns {Promise<string>} - A promise that resolves with the constructed URL as a string.
+ */
+export async function buildURL(schema, host, path) {
+    return `${schema}://${host}/${path}`;
 }

@@ -1,4 +1,8 @@
-// 404 not found
+
+/**
+ * Represents a response for a resource not found (404).
+ * @returns {Response} The response object.
+ */
 export const NotFoundResponse = () =>
 	new Response(JSON.stringify({
         msg:"Oops, you seem to have went the wrong way",
@@ -8,10 +12,15 @@ export const NotFoundResponse = () =>
 		status: 404,
 	});
 
-// 200 Success
-export const GenericResponseSuccess = (message,data) =>
+/**
+ * Represents a generic success response (200).
+ * @param {string} message - The success message.
+ * @param {any} data - The data to be included in the response.
+ * @returns {Response} The response object.
+ */
+export const GenericResponseSuccess = (message, data) =>
 	new Response(JSON.stringify({
-        msg:message,
+        msg: message,
         success: true,
         data: data
       }),
@@ -19,13 +28,15 @@ export const GenericResponseSuccess = (message,data) =>
 		headers: { 'content-type': 'application/json' },
 		status: 200,
 	 });
-    
 
-
-// 400 Bad Reques
+/**
+ * Represents a generic bad request response (400).
+ * @param {string} message - The error message.
+ * @returns {Response} The response object.
+ */
 export const GenericResponseBadRequest = (message) =>
      new Response(JSON.stringify({
-        msg:message,
+        msg: message,
         success: false,
         data: null
       }),
@@ -33,12 +44,15 @@ export const GenericResponseBadRequest = (message) =>
          headers: { 'content-type': 'application/json' },
          status: 400,
       });
- 
 
-// 500 Error code
+/**
+ * Represents a generic server error response (500).
+ * @param {string} message - The error message.
+ * @returns {Response} The response object.
+ */
 export const GenericResponseServerError = (message) =>
      new Response(JSON.stringify({
-        msg:message,
+        msg: message,
         success: false,
         data: null
       }),

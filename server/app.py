@@ -42,6 +42,7 @@ def scan_eml():
         # Check if any matches were found
         if matches:
             result = {'status': 'malicious', 'matches': [str(match) for match in matches]}
+            
         else:
             result = {'status': 'clean', 'matches': []}
 
