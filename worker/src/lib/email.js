@@ -85,6 +85,6 @@ export  async function handleEmailForwarding(message, env){
  * @param {string} path - The URL path.
  * @returns {Promise<string>} - A promise that resolves with the constructed URL as a string.
  */
-export async function buildURL(schema, host, path) {
+export function buildURL(schema, host, path) {
     return `${schema}://${host}/${path}`;
 }
