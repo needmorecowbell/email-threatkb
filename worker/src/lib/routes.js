@@ -15,7 +15,7 @@ import { NotFoundResponse } from "./responses"
 export async function handleRequest(request, env) {
   const router = new Router()
 
-  router.get('/', () => endpointIndex(request));
+  router.get('/', () => endpointIndex(request,env));
   router.post('/mapping/add', () => endpointMappingAdd(request, env));
   router.post('/mapping/delete', () => endpointMappingDelete(request, env));
   router.get('/mapping/list', () => endpointMappingList(request, env));

@@ -148,14 +148,15 @@ export async function cacheEmailMappingDeleteByMapping(cache_email_mapping, env)
 export async function cacheEmailMappingDelete(forward_to, gateway_address, env) {
     console.debug(`Deleting email mapping for ${gateway_address} -> ${forward_to}`)
     try {
-        let result = await env.KV.delete(buildKey(gateway_address, forward_to))
+        let key = buildKey(gateway_address, forward_to)
+        console.debug(key)
+        let result = await env.KV.delete(key)
         return result
     } catch (error) {
         console.error(error)
         throw KVError("Failed to delete email mapping: " + error)
     }
 }
-
 
 /**
  * Adds a new email mapping to the cache.
@@ -169,14 +170,14 @@ export async function cacheEmailMappingAdd(forward_to, gateway_address, env) {
     console.debug(`Adding email mapping for ${gateway_address} -> ${forward_to}`)
     if (gateway_address === "") {
         console.debug("No gateway address provided, generating new one...")
-        gateway_address = await generateNewGatewayAddress()
+        gateway_address = await generateNewGatewayAddress(env)
         console.debug(`Generated gateway address: ${gateway_address}`)
     }
 
     let mapping = CacheEmailMapping(forward_to, gateway_address, env)
-    console.debug(`Adding mapping to KV as KEY:${key} VALUE:${JSON.stringify(mapping)}`)
+    console.debug(`Adding mapping to KV as KEY:${buildKeyByMapping(mapping)} VALUE:${JSON.stringify(mapping)}`)
     try {
-        let result = env.KV.put(buildKeyByMapping(mapping), JSON.stringify(mapping))
+        let result = await env.KV.put(buildKeyByMapping(mapping), JSON.stringify(mapping))
         return result
     } catch (error) {
         console.error(error)
