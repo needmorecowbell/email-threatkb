@@ -1,6 +1,0 @@
-POST http://127.0.0.1:6000/register
-
-{
-    "forward_to": "test@gmail.com",
-    "gateway_address": "test2@gmail.com"
-}

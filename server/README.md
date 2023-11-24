@@ -4,10 +4,10 @@ Proof of concept yara processor. Just takes in the raw eml and checks it against
 
 ## Installation
 
-- `apt install python3 python3-pip yara python3-flask python3-yara` (or in a virtualenv)
+- `apt install python3 python3-pip yara python3-flask python3-yara gunicorn` (or using a virtualenv)
 
 ## Usage
-- `python3 app.py`
+- `gunicorn app:app --bind=127.0.0.1:6000`
 
 spins up the flask server, opens an index route with welcome banner and a /scan route which accepts post requests, with the raw eml as byte data.
 
