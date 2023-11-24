@@ -7,6 +7,7 @@ import { GenericResponseSuccess } from "../lib/responses"
  * @returns {Response} The response object.
  */
 const endpointIndex = async (request) => {
+	console.debug("Received request to /, returning welcome banner")
 	return GenericResponseSuccess("Welcome to the eml funnel worker")
 }
 

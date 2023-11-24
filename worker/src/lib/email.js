@@ -6,6 +6,7 @@
  * @returns {Promise<void>} - A promise that resolves when the email handling is complete.
  */
 export async function handleEmail(message, env) {
+    console.debug(`Entered handle email for message: ${message.from}->${message.to}`)
     const init = {
         method: "POST",
         body: message.raw,
@@ -13,10 +14,11 @@ export async function handleEmail(message, env) {
             "content-type": "application/json;charset=UTF-8",
         }
     };
-
+    console.debug("Requesting metadata from processor")
     const response = await fetch(buildURL(env.PROCESSOR_SCHEMA, env.PROCESSOR_HOST, ""), init);
+    console.debug("Gathering Response from processor")
     const metadata = await gatherResponse(response);
-    handleMetadata(metadata, message,env);
+    await handleMetadata(metadata, message,env);
 }
 
 /**
@@ -42,9 +44,12 @@ export async function gatherResponse(response) {
  * @returns {Promise<void>} - A promise that resolves when the metadata handling is complete.
  */
 export async function handleMetadata(metadata, message,env) {
+    console.debug(`Handling metadata: ${metadata}`)
     if (metadata.status === "malicious") {
+        console.debug("Message is malicious, forwarding to vault: ", env.VAULT_EMAIL)
         await message.forward(env.VAULT_EMAIL);
     } else {
+        console.debug("Message is not malicious, forwarding to gateway: ", env.GATEWAY_EMAIL)
         await message.forward(env.GATEWAY_EMAIL);
     }
 }

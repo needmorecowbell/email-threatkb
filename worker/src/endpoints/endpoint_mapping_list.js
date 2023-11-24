@@ -12,15 +12,18 @@ import { KVError } from "../lib/errors";
  */
 export const endpointMappingList = async (request, env) => {
     let mappings = []
+    console.debug(`Received request to /mapping/list to list email mappings`)
     try {
         mappings = await cacheEmailMappingList(env)
     } catch (err) {
         if (err instanceof KVError) {
+            console.debug("Error communicating with KV")
             return GenericResponseServerError("Error communicating with KV")
         }
+        console.debug("Failed to retrieve email mappings")
         return GenericResponseServerError("Failed to retrieve email mappings")
     }
 
-
+    console.debug(`Retrieved ${mappings.length} email mappings`)
     return GenericResponseSuccess("Email mappings retrieved", mappings)
 }

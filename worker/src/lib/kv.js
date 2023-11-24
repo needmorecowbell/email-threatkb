@@ -32,6 +32,7 @@ export const CacheEmailMapping = (forward_to, gateway_address) => {
  * @returns {Promise<boolean>} A promise that resolves to true if the mapping exists, otherwise false.
  */
 export async function mappingExists(gateway_address, forward_to, env) {
+    console.debug(`Checking if mapping exists for ${gateway_address} -> ${forward_to}`)
     try {
         let result = await cacheEmailMappingGet(gateway_address, forward_to, env)
         if (result === undefined) {
@@ -48,23 +49,26 @@ export async function mappingExists(gateway_address, forward_to, env) {
  * @returns {Promise<string>} The new gateway address.
  */
 export async function generateNewGatewayAddress(env) {
-    let new_name = `${await generateRandomWord()}-${await generateRandomWord()}-${await generateRandomWord()}`
-    let new_address = `${new_name}@${env.GATEWAY_DOMAIN}`
-    let name_exists = true
-
+    console.debug("Generating new gateway address")
+    let gen_new_name = true
+    let new_name = ""
+    let new_address = ""
     let mappings = await cacheEmailMappingList(env)
-    if (mappings === undefined) {
-        return Error("Failed to retrieve mappings")
-    }
 
-    for (let i = 0; i < mappings.length; i++) {
-        if (mappings[i].gateway_address === new_address) {
-            name_exists = true
-            break
+    while(gen_new_name){
+        new_name = `${await generateRandomWord()}-${await generateRandomWord()}-${await generateRandomWord()}`
+        gen_new_name = false
+        new_address = `${new_name}@${env.GATEWAY_DOMAIN}`
+
+        for (let i = 0; i < mappings.length; i++) {
+            if (mappings[i].gateway_address === new_address) {
+                gen_new_name = true
+                console.debug(`Generated name ${new_name} already exists, generating new name`)
+                break
+            }
         }
     }
-
-    return new_name
+    return new_address
 };
 
 /**
@@ -72,6 +76,7 @@ export async function generateNewGatewayAddress(env) {
  * @returns {Promise<string>} A promise that resolves to a random word.
  */
 export async function generateRandomWord() {
+    console.debug("Retrieving random word from api")
     let response = await fetch("https://random-word-api.herokuapp.com/word?number=1")
     let json = await response.json()
     return json[0]
@@ -83,16 +88,20 @@ export async function generateRandomWord() {
  * @returns {Promise<Array>} - A promise that resolves to an array of email mappings.
  */
 export async function cacheEmailMappingList(env) {
+    console.debug("Retrieving all email mappings")
     let results = await env.KV.list({ prefix: PrefixMapping });
     if (results === undefined) {
+        console.error("Failed to retrieve email mappings")
         throw KVError("Failed to retrieve email mappings")
     }
-
+    console.debug(`Retrieved ${results.keys.length} email mapping keys`)
     let mappings = []
     for (let i = 0; i < results.keys.length; i++) {
+        console.debug(`Retrieving mapping for ${results.keys[i].name}`)
         let mapping = await env.KV.get(results.keys[i].name)
         if (mapping === undefined) {
-            throw KVError("Failed to retrieve email mapping")
+            console.error("Failed to retrieve email mapping from key: " + results.keys[i].name)
+            throw KVError("Failed to retrieve email mapping from key: " + results.keys[i].name)
         }
         mappings.push(mapping)
     }
@@ -107,13 +116,14 @@ export async function cacheEmailMappingList(env) {
  * @returns {Promise<Object>} A promise that resolves to an email mapping, or null.
  */
 export async function cacheEmailMappingGet(gateway_address, forward_to, env) {
+    console.debug(`Retrieving email mapping for ${gateway_address} -> ${forward_to}`)
     try {
         let result = await env.KV.get(buildKey(gateway_address, forward_to))
         return result
     } catch (e) {
+        console.error(e)
         throw KVError("Failed to retrieve email mapping:" + e)
     }
-
 }
 
 /**
@@ -123,6 +133,7 @@ export async function cacheEmailMappingGet(gateway_address, forward_to, env) {
  * @returns {Promise<boolean>} A promise that resolves to true if the email mapping is successfully deleted, otherwise false.
  */
 export async function cacheEmailMappingDeleteByMapping(cache_email_mapping, env) {
+    console.debug(`Deleting email mapping for ${cache_email_mapping.gateway_address} -> ${cache_email_mapping.forward_to}`)
     let result = await env.KV.delete(buildKey(cache_email_mapping))
     return result
 }
@@ -135,10 +146,12 @@ export async function cacheEmailMappingDeleteByMapping(cache_email_mapping, env)
  * @returns {Promise<boolean>} A promise that resolves to true if the email mapping is successfully deleted, otherwise false.
  */
 export async function cacheEmailMappingDelete(forward_to, gateway_address, env) {
+    console.debug(`Deleting email mapping for ${gateway_address} -> ${forward_to}`)
     try {
         let result = await env.KV.delete(buildKey(gateway_address, forward_to))
         return result
     } catch (error) {
+        console.error(error)
         throw KVError("Failed to delete email mapping: " + error)
     }
 }
@@ -153,15 +166,20 @@ export async function cacheEmailMappingDelete(forward_to, gateway_address, env) 
  * @returns {Promise<boolean>} A promise that resolves to true if the mapping is successfully added to the cache, otherwise false.
  */
 export async function cacheEmailMappingAdd(forward_to, gateway_address, env) {
+    console.debug(`Adding email mapping for ${gateway_address} -> ${forward_to}`)
     if (gateway_address === "") {
+        console.debug("No gateway address provided, generating new one...")
         gateway_address = generateNewGatewayAddress()
+        console.debug(`Generated gateway address: ${gateway_address}`)
     }
 
     let mapping = CacheEmailMapping(forward_to, gateway_address, env)
+    console.debug(`Adding mapping to KV as: KEY:${buildKey(mapping)} VALUE:${JSON.stringify(mapping)}`)
     try {
         let result = env.KV.put(buildKeyByMapping(mapping), JSON.stringify(mapping))
         return result
     } catch (error) {
+        console.error(error)
         throw KVError("Failed to add email mapping to KV")
     }
 

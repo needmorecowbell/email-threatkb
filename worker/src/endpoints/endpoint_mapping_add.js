@@ -11,11 +11,13 @@ import { mappingExists, CacheEmailMapping, cacheEmailMappingAdd, generateNewGate
  */
 export const endpointMappingAdd = async (request, env) => {
     let body = await request.json();
-
+    console.debug(`Received request to /mapping/add to add ${body.gateway_address} -> ${body.forward_to}`)
     if(body.forward_to === undefined){
+        console.debug("bad request: forward_to is required")
         return GenericResponseBadRequest("forward_to is required")
     }
     if(body.gateway_address === undefined){
+        console.debug("No gateway address provided, generating new one...")
         body.gateway_address = await generateNewGatewayAddress(env)
     }
 
@@ -25,21 +27,26 @@ export const endpointMappingAdd = async (request, env) => {
 
     } catch (error) {
         if (error instanceof KVError) {
+            console.debug("Error communicating with KV")
             return GenericResponseServerError("Error communicating with KV")
         }
+        console.debug("Failed to determine if email mapping exists")
         return GenericResponseServerError("Failed to determine if email mapping exists")
     }
     
     if(result === undefined) {
+        console.debug("Couldn't determine if mapping exists")
         return GenericResponseBadRequest("Couldn't determine if mapping exists")
     }else if(result === true){
+        console.debug(`Mapping already exists for ${body.gateway_address} -> ${body.forward_to}`)
         return GenericResponseBadRequest("Email mapping already exists")
     }
     let new_mapping = CacheEmailMapping(body.forward_to, body.gateway_address)
     result = await cacheEmailMappingAdd(new_mapping, "", env)
     if(result === undefined){
+        console.debug("Failed to add email mapping to KV")
         return GenericResponseServerError("Failed to add email mapping to KV")
     }
-
+    console.debug(`Added mapping for ${body.gateway_address} -> ${body.forward_to}`)
     return GenericResponseSuccess("Email mapping added")
 }
