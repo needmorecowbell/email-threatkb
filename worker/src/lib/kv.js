@@ -134,7 +134,7 @@ export async function cacheEmailMappingGet(gateway_address, forward_to, env) {
  */
 export async function cacheEmailMappingDeleteByMapping(cache_email_mapping, env) {
     console.debug(`Deleting email mapping for ${cache_email_mapping.gateway_address} -> ${cache_email_mapping.forward_to}`)
-    let result = await env.KV.delete(buildKey(cache_email_mapping))
+    let result = await env.KV.delete(buildKeyByMapping(cache_email_mapping))
     return result
 }
 
@@ -169,12 +169,12 @@ export async function cacheEmailMappingAdd(forward_to, gateway_address, env) {
     console.debug(`Adding email mapping for ${gateway_address} -> ${forward_to}`)
     if (gateway_address === "") {
         console.debug("No gateway address provided, generating new one...")
-        gateway_address = generateNewGatewayAddress()
+        gateway_address = await generateNewGatewayAddress()
         console.debug(`Generated gateway address: ${gateway_address}`)
     }
 
     let mapping = CacheEmailMapping(forward_to, gateway_address, env)
-    console.debug(`Adding mapping to KV as: KEY:${buildKey(mapping)} VALUE:${JSON.stringify(mapping)}`)
+    console.debug(`Adding mapping to KV as KEY:${key} VALUE:${JSON.stringify(mapping)}`)
     try {
         let result = env.KV.put(buildKeyByMapping(mapping), JSON.stringify(mapping))
         return result
@@ -190,7 +190,7 @@ export async function cacheEmailMappingAdd(forward_to, gateway_address, env) {
  * @param {Object} cache_email_mapping - The cache_email_mapping object.
  * @returns {string} The generated key.
  */
-async function buildKeyByMapping(cache_email_mapping) {
+function buildKeyByMapping(cache_email_mapping) {
     return `${PrefixMapping}_${cache_email_mapping.gateway_address}_${cache_email_mapping.forward_to}`
 }
 
@@ -200,6 +200,6 @@ async function buildKeyByMapping(cache_email_mapping) {
  * @param {string} forward_to - The forward address.
  * @returns {string} The built key.
  */
-async function buildKey(gateway_address, forward_to) {
+function buildKey(gateway_address, forward_to) {
     return `${PrefixMapping}_${gateway_address}_${forward_to}`
 }
