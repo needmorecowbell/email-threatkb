@@ -1,4 +1,4 @@
-
+import {cacheEmailMappingList} from "./kv"
 /**
  * Handles the email message by sending it to the processor and handling the metadata.
  * @param {object} message - The email message object.
@@ -45,15 +45,34 @@ export async function gatherResponse(response) {
  */
 export async function handleMetadata(metadata, message,env) {
     console.debug(`Handling metadata: ${metadata}`)
+
     if (metadata.status === "malicious") {
         console.debug("Message is malicious, forwarding to vault: ", env.VAULT_EMAIL)
-        await message.forward(env.VAULT_EMAIL);
+        message.forward(env.VAULT_EMAIL);
     } else {
         console.debug("Message is not malicious, forwarding to gateway: ", env.GATEWAY_EMAIL)
-        await message.forward(env.GATEWAY_EMAIL);
+        await handleEmailForwarding(message,env)
     }
 }
 
+/**
+ * Handles email forwarding based on the provided message and environment.
+ * 
+ * @param {object} message - The email message object.
+ * @param {object} env - The environment object.
+ * @returns {void}
+ */
+export  async function handleEmailForwarding(message, env){
+    let mappings = await cacheEmailMappingList(env)
+    mappings.forEach(mapping => {
+        if (mapping.gateway_email === message.to){
+            console.log(`Forwarding message from ${message.from} to ${mapping.forward_email}`)
+            message.forward(mapping.forward_email)
+            return
+        }
+    });
+    console.debug(`No mapping found for ${message.to}, dropping message...`)
+}
 /**
  * buildURL constructs a URL based on the provided schema, host, and path.
  * @param {string} schema - The URL schema (e.g., "http" or "https").

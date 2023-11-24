@@ -27,6 +27,6 @@ export default {
    * @param {Object} ctx - The Cloudflare worker context.
    */
   async email(message, env, ctx) {
-    handleEmail(message, env)
+    await handleEmail(message, env)
   }
 };

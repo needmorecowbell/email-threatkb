@@ -16,10 +16,13 @@ export const PrefixMapping = "mapping"
  * @param {string} [gateway_address=""] - The gateway address to use.
  * @returns {Object} The email mapping object.
  */
-export const CacheEmailMapping = (forward_to, gateway_address) => {
+export const CacheEmailMapping = (forward_to, gateway_address, date_created="") => {
+    if (date_created === "") {
+        date_created = new Date().toISOString()
+    }
     return {
         forward_to: forward_to,
-        date_created: new Date().toISOString(),
+        date_created: date_created,
         gateway_address: gateway_address,
     }
 }
@@ -98,12 +101,13 @@ export async function cacheEmailMappingList(env) {
     let mappings = []
     for (let i = 0; i < results.keys.length; i++) {
         console.debug(`Retrieving mapping for ${results.keys[i].name}`)
-        let mapping = await env.KV.get(results.keys[i].name)
+        let mapping = JSON.parse(await env.KV.get(results.keys[i].name))
         if (mapping === undefined) {
             console.error("Failed to retrieve email mapping from key: " + results.keys[i].name)
             throw KVError("Failed to retrieve email mapping from key: " + results.keys[i].name)
         }
-        mappings.push(mapping)
+        let cacheEmailMapping = CacheEmailMapping(mapping.forward_to, mapping.gateway_address, mapping.date_created)
+        mappings.push(cacheEmailMapping)
     }
     return mappings
 }
@@ -174,7 +178,7 @@ export async function cacheEmailMappingAdd(forward_to, gateway_address, env) {
         console.debug(`Generated gateway address: ${gateway_address}`)
     }
 
-    let mapping = CacheEmailMapping(forward_to, gateway_address, env)
+    let mapping = CacheEmailMapping(forward_to, gateway_address)
     console.debug(`Adding mapping to KV as KEY:${buildKeyByMapping(mapping)} VALUE:${JSON.stringify(mapping)}`)
     try {
         let result = await env.KV.put(buildKeyByMapping(mapping), JSON.stringify(mapping))
