@@ -6,7 +6,8 @@ kv_namespaces = [
   { binding = "KV", id = "" }
 ]
 [vars]
+GATEWAY_DOMAIN = "domain.com"
 VAULT_EMAIL = "vault@domain.com"
-PASSTHROUGH_EMAIL = "passthrough@domain.com"
+GATEWAY_EMAIL = "gateway@domain.com"
 PROCESSOR_SCHEMA = "https"
 PROCESSOR_HOST = "processor.domain.com"

@@ -16,7 +16,7 @@ export async function handleEmail(message, env) {
 
     const response = await fetch(buildURL(env.PROCESSOR_SCHEMA, env.PROCESSOR_HOST, ""), init);
     const metadata = await gatherResponse(response);
-    handleMetadata(metadata, message);
+    handleMetadata(metadata, message,env);
 }
 
 /**
@@ -38,13 +38,14 @@ export async function gatherResponse(response) {
  * handleMetadata takes the metadata response and analyzes it to determine if the message will ultimately be forwarded.
  * @param {object} metadata - The metadata object.
  * @param {object} message - The email message object.
+ * @param {object} env - The environment object.
  * @returns {Promise<void>} - A promise that resolves when the metadata handling is complete.
  */
-export async function handleMetadata(metadata, message) {
+export async function handleMetadata(metadata, message,env) {
     if (metadata.status === "malicious") {
-        await message.forward(VAULT_EMAIL);
+        await message.forward(env.VAULT_EMAIL);
     } else {
-        await message.forward(PASSTHROUGH_EMAIL);
+        await message.forward(env.GATEWAY_EMAIL);
     }
 }
 

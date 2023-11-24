@@ -1,7 +1,6 @@
 
-import { GenericResponseBadRequest, GenericResponseSuccess } from "../lib/responses";
+import { GenericResponseBadRequest, GenericResponseSuccess, GenericResponseServerError } from "../lib/responses";
 import { cacheEmailMappingDelete } from "../lib/kv";
-import { CacheEmailMapping } from "../lib/kv";
 
 /**
  * Endpoint function for deleting an email mapping from the cache.
@@ -12,9 +11,21 @@ import { CacheEmailMapping } from "../lib/kv";
  */
 export const endpointMappingDelete = async (request, env) => {
     let body = await request.json()
-    let result = await cacheEmailMappingDelete(body.forward_to, body.gateway_address, env)
-    if (result === undefined) {
-        return GenericResponseBadRequest("Failed to delete email mapping")
+    if (body.forward_to === undefined || body.gateway_address === undefined) {
+        return GenericResponseBadRequest("forward_to and gateway_address are required")
+    }
+
+    try {
+        let result = await cacheEmailMappingDelete(body.forward_to, body.gateway_address, env)
+        if (result === undefined) {
+            return GenericResponseServerError("Failed to delete email mapping")
+        }
+
+    } catch (error) {
+        if (error instanceof KVError) {
+            return GenericResponseServerError("Error communicating with KV")
+        }
+        return GenericResponseServerError("Failed to delete email mapping")
     }
 
     return GenericResponseSuccess("Email mapping deleted")

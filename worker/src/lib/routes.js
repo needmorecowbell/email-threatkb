@@ -18,7 +18,6 @@ export async function handleRequest(request, env) {
   router.get('/', () => endpointIndex(request));
   router.post('/mapping/add', () => endpointMappingAdd(request, env));
   router.post('/mapping/delete', () => endpointMappingDelete(request, env));
-
   router.get('/mapping/list', () => endpointMappingList(request, env));
 
   router.all(() => { return NotFoundResponse() })

@@ -2,12 +2,12 @@
  * @module kv
  * @description This module provides functions for interacting with the KV store.
  */
-
+import { KVError } from "./errors"
 
 /**
  * @constant {string} PrefixMapping- The prefix for mapping-related keys in the KV store.
  */
-export const PrefixMapping= "mapping"
+export const PrefixMapping = "mapping"
 
 /**
  * Creates a new email mapping object for caching.
@@ -16,12 +16,11 @@ export const PrefixMapping= "mapping"
  * @param {string} [gateway_address=""] - The gateway address to use.
  * @returns {Object} The email mapping object.
  */
-export const CacheEmailMapping = (forward_to, gateway_address = "") => {
-    let address = gateway_address !== "" ? gateway_address : generateNewGatewayAddress(env);
+export const CacheEmailMapping = (forward_to, gateway_address) => {
     return {
         forward_to: forward_to,
         date_created: new Date().toISOString(),
-        gateway_address: address,
+        gateway_address: gateway_address,
     }
 }
 
@@ -30,14 +29,18 @@ export const CacheEmailMapping = (forward_to, gateway_address = "") => {
  * @param {string} gateway_address - The gateway address.
  * @param {string} forward_to - The forward address.
  * @param {Object} env - The environment object.
- * @returns {Promise<boolean>} A promise that resolves to true if the mapping exists, false otherwise.
+ * @returns {Promise<boolean>} A promise that resolves to true if the mapping exists, otherwise false.
  */
 export async function mappingExists(gateway_address, forward_to, env) {
-    console.log("Checking if mapping exists")
-    console.log(env.KV)
-    let result = await env.KV.get(buildKey(gateway_address, forward_to))
-    console.log("Result: ",result)
-    return result !== null
+    try {
+        let result = await cacheEmailMappingGet(gateway_address, forward_to, env)
+        if (result === undefined) {
+            throw KVError("Failed to retrieve mapping")
+        }
+        return result !== null
+    } catch (error) {
+        return error
+    }
 }
 
 /**
@@ -45,17 +48,20 @@ export async function mappingExists(gateway_address, forward_to, env) {
  * @returns {Promise<string>} The new gateway address.
  */
 export async function generateNewGatewayAddress(env) {
-    // generate a string shortname for the email address that doesn't already exist in the cache, example could look like "selfish-zebra-1234"
-    let new_name = `${generateRandomWord()}-${generateRandomWord()}-${generateRandomWord()}`
+    let new_name = `${await generateRandomWord()}-${await generateRandomWord()}-${await generateRandomWord()}`
+    let new_address = `${new_name}@${env.GATEWAY_DOMAIN}`
     let name_exists = true
-    let mappings = await cacheEmailMappingList(env)
 
-   // instead of a while loop, check using the mappings variable and a for loop
-   for (let i = 0; i < mappings.length; i++) {
-       if (mappings[i].gateway_address === new_name) {
-           name_exists = true
-           break
-       }
+    let mappings = await cacheEmailMappingList(env)
+    if (mappings === undefined) {
+        return Error("Failed to retrieve mappings")
+    }
+
+    for (let i = 0; i < mappings.length; i++) {
+        if (mappings[i].gateway_address === new_address) {
+            name_exists = true
+            break
+        }
     }
 
     return new_name
@@ -70,14 +76,27 @@ export async function generateRandomWord() {
     let json = await response.json()
     return json[0]
 }
+
 /**
- * Retrieves a list of email mappings from the cache.
+ * Retrieves and caches the email mapping list from the environment's KV store.
  * @param {Object} env - The environment object.
- * @returns {Promise<Array>} A promise that resolves to an array of email mappings.
+ * @returns {Promise<Array>} - A promise that resolves to an array of email mappings.
  */
 export async function cacheEmailMappingList(env) {
     let results = await env.KV.list({ prefix: PrefixMapping });
-    return results
+    if (results === undefined) {
+        throw KVError("Failed to retrieve email mappings")
+    }
+
+    let mappings = []
+    for (let i = 0; i < results.keys.length; i++) {
+        let mapping = await env.KV.get(results.keys[i].name)
+        if (mapping === undefined) {
+            throw KVError("Failed to retrieve email mapping")
+        }
+        mappings.push(mapping)
+    }
+    return mappings
 }
 
 /**
@@ -88,8 +107,13 @@ export async function cacheEmailMappingList(env) {
  * @returns {Promise<Object>} A promise that resolves to an email mapping, or null.
  */
 export async function cacheEmailMappingGet(gateway_address, forward_to, env) {
-    let result = await env.KV.get(buildKey(gateway_address, forward_to))
-    return result
+    try {
+        let result = await env.KV.get(buildKey(gateway_address, forward_to))
+        return result
+    } catch (e) {
+        throw KVError("Failed to retrieve email mapping:" + e)
+    }
+
 }
 
 /**
@@ -105,13 +129,18 @@ export async function cacheEmailMappingDeleteByMapping(cache_email_mapping, env)
 
 /**
  * Deletes the email mapping from the cache when passed a forward-to and gateway address.
- * @param {Object} cache_email_mapping - The email mapping to delete from the cache.
+ * @param {string} forward_to - The email address to forward to.
+ * @param {string} gateway_address - The gateway address.
  * @param {Object} env - The environment object.
  * @returns {Promise<boolean>} A promise that resolves to true if the email mapping is successfully deleted, otherwise false.
  */
 export async function cacheEmailMappingDelete(forward_to, gateway_address, env) {
-    let result = await env.KV.delete(buildKey(gateway_address, forward_to))
-    return result
+    try {
+        let result = await env.KV.delete(buildKey(gateway_address, forward_to))
+        return result
+    } catch (error) {
+        throw KVError("Failed to delete email mapping: " + error)
+    }
 }
 
 
@@ -129,8 +158,13 @@ export async function cacheEmailMappingAdd(forward_to, gateway_address, env) {
     }
 
     let mapping = CacheEmailMapping(forward_to, gateway_address, env)
-    let result = env.KV.put(buildKeyByMapping(mapping), JSON.stringify(mapping))
-    return result
+    try {
+        let result = env.KV.put(buildKeyByMapping(mapping), JSON.stringify(mapping))
+        return result
+    } catch (error) {
+        throw KVError("Failed to add email mapping to KV")
+    }
+
 }
 
 /**
