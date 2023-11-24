@@ -20,8 +20,8 @@ export const endpointMappingList = async (request, env) => {
             console.debug("Error communicating with KV")
             return GenericResponseServerError("Error communicating with KV")
         }
-        console.debug("Failed to retrieve email mappings",err)
-        return GenericResponseServerError("Failed to retrieve email mappings"+err)
+        console.debug("Failed to retrieve email mappings", err)
+        return GenericResponseServerError("Failed to retrieve email mappings" + err)
     }
 
     console.debug(`Retrieved ${mappings.length} email mappings`)

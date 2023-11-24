@@ -16,7 +16,7 @@ export const PrefixMapping = "mapping"
  * @param {string} [gateway_address=""] - The gateway address to use.
  * @returns {Object} The email mapping object.
  */
-export const CacheEmailMapping = (forward_to, gateway_address, date_created="") => {
+export const CacheEmailMapping = (forward_to, gateway_address, date_created = "") => {
     if (date_created === "") {
         date_created = new Date().toISOString()
     }
@@ -58,7 +58,7 @@ export async function generateNewGatewayAddress(env) {
     let new_address = ""
     let mappings = await cacheEmailMappingList(env)
 
-    while(gen_new_name){
+    while (gen_new_name) {
         new_name = `${await generateRandomWord()}-${await generateRandomWord()}-${await generateRandomWord()}`
         gen_new_name = false
         new_address = `${new_name}@${env.GATEWAY_DOMAIN}`

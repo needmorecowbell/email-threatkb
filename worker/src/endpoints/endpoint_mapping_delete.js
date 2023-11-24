@@ -24,8 +24,8 @@ export const endpointMappingDelete = async (request, env) => {
             console.debug("Error communicating with KV")
             return GenericResponseServerError("Error communicating with KV")
         }
-        console.debug("Failed to delete email mapping"+error)
-        return GenericResponseServerError("Failed to delete email mapping:"+error)
+        console.debug("Failed to delete email mapping" + error)
+        return GenericResponseServerError("Failed to delete email mapping:" + error)
     }
     console.debug(`Deleted mapping for ${body.gateway_address} -> ${body.forward_to}`)
     return GenericResponseSuccess("Email mapping deleted")

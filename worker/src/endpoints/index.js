@@ -5,7 +5,7 @@ import { GenericResponseSuccess } from "../lib/responses"
  * @param {Request} request - The request object.
  * @returns {Response} The response object.
  */
-const endpointIndex = async (request,env) => {
+const endpointIndex = async (request, env) => {
 	console.debug("Received request to /, returning welcome banner")
 	return GenericResponseSuccess("Welcome to the eml funnel worker")
 }

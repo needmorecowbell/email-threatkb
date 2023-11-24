@@ -16,8 +16,10 @@ export async function handleEmail(message, env) {
     };
     console.debug("Requesting metadata from processor")
     const response = await fetch(buildURL(env.PROCESSOR_SCHEMA, env.PROCESSOR_HOST, ""), init);
+
     console.debug("Gathering Response from processor")
     const metadata = await gatherResponse(response);
+
     await handleMetadata(metadata, message,env);
 }
 
@@ -30,6 +32,7 @@ export async function handleEmail(message, env) {
 export async function gatherResponse(response) {
     const { headers } = response;
     const contentType = headers.get("content-type") || "";
+
     if (contentType.includes("application/json")) {
         return JSON.stringify(await response.json());
     }
@@ -71,8 +74,10 @@ export  async function handleEmailForwarding(message, env){
             return
         }
     });
+
     console.debug(`No mapping found for ${message.to}, dropping message...`)
 }
+
 /**
  * buildURL constructs a URL based on the provided schema, host, and path.
  * @param {string} schema - The URL schema (e.g., "http" or "https").
