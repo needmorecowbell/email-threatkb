@@ -2,6 +2,8 @@
 import Router from "./router"
 import endpointIndex from "../endpoints"
 import { endpointMappingAdd } from "../endpoints/endpoint_mapping_add"
+import { endpointMappingList } from "../endpoints/endpoint_mapping_list"
+import { endpointMappingDelete } from "../endpoints/endpoint_mapping_delete"
 import { NotFoundResponse } from "./responses"
 
 /**
@@ -15,6 +17,10 @@ export async function handleRequest(request, env) {
 
   router.get('/', () => endpointIndex(request));
   router.post('/mapping/add', () => endpointMappingAdd(request, env));
+  router.post('/mapping/delete', () => endpointMappingDelete(request, env));
+
+  router.get('/mapping/list', () => endpointMappingList(request, env));
+
   router.all(() => { return NotFoundResponse() })
 
   const response = await router.route(request)

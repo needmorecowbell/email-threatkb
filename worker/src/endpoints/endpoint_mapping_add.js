@@ -2,8 +2,6 @@
 import { GenericResponseBadRequest, GenericResponseSuccess } from "../lib/responses";
 import { mappingExists, CacheEmailMapping, cacheEmailMappingAdd } from "../lib/kv";
 
-
-
 /**
  * Endpoint function for adding a new email mapping to the cache.
  * 
@@ -24,5 +22,6 @@ export const endpointMappingAdd = async (request, env) => {
     if (result === false) {
         return GenericResponseBadRequest("Failed to add email mapping")
     }
+
     return GenericResponseSuccess("Email mapping added")
 }

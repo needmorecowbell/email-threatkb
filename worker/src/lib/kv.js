@@ -20,7 +20,7 @@ export const CacheEmailMapping = (forward_to, gateway_address = "") => {
     let address = gateway_address !== "" ? gateway_address : generateNewGatewayAddress(env);
     return {
         forward_to: forward_to,
-        date_created: new Date().toLocaleDateString(),
+        date_created: new Date().toISOString(),
         gateway_address: address,
     }
 }
@@ -45,22 +45,38 @@ export async function mappingExists(gateway_address, forward_to, env) {
  * @returns {Promise<string>} The new gateway address.
  */
 export async function generateNewGatewayAddress(env) {
-    let mapping_list = await cacheEmailMappingList(env)
-    let new_name = "notforlong"
+    // generate a string shortname for the email address that doesn't already exist in the cache, example could look like "selfish-zebra-1234"
+    let new_name = `${generateRandomWord()}-${generateRandomWord()}-${generateRandomWord()}`
+    let name_exists = true
+    let mappings = await cacheEmailMappingList(env)
 
-    user_list.forEach(userCache => {
-        userCache.forward_to
-    });
+   // instead of a while loop, check using the mappings variable and a for loop
+   for (let i = 0; i < mappings.length; i++) {
+       if (mappings[i].gateway_address === new_name) {
+           name_exists = true
+           break
+       }
+    }
+
     return new_name
 };
 
+/**
+ * Generates a random word using an API.
+ * @returns {Promise<string>} A promise that resolves to a random word.
+ */
+export async function generateRandomWord() {
+    let response = await fetch("https://random-word-api.herokuapp.com/word?number=1")
+    let json = await response.json()
+    return json[0]
+}
 /**
  * Retrieves a list of email mappings from the cache.
  * @param {Object} env - The environment object.
  * @returns {Promise<Array>} A promise that resolves to an array of email mappings.
  */
 export async function cacheEmailMappingList(env) {
-    let results = await env.KV.list({ prefix: PrefixUser });
+    let results = await env.KV.list({ prefix: PrefixMapping });
     return results
 }
 
@@ -69,7 +85,7 @@ export async function cacheEmailMappingList(env) {
  * @param {string} gateway_address - The gateway address.
  * @param {string} forward_to - The forward address.
  * @param {Object} env - The environment object.
- * @returns {Promise<Object>} A promise that resolves to an email mapping.
+ * @returns {Promise<Object>} A promise that resolves to an email mapping, or null.
  */
 export async function cacheEmailMappingGet(gateway_address, forward_to, env) {
     let result = await env.KV.get(buildKey(gateway_address, forward_to))
@@ -77,15 +93,27 @@ export async function cacheEmailMappingGet(gateway_address, forward_to, env) {
 }
 
 /**
- * Deletes the email mapping from the cache.
+ * Deletes the email mapping from the cache when passed a CacheEmailMapping object.
  * @param {Object} cache_email_mapping - The email mapping to delete from the cache.
  * @param {Object} env - The environment object.
  * @returns {Promise<boolean>} A promise that resolves to true if the email mapping is successfully deleted, otherwise false.
  */
-export async function cacheEmailMappingDelete(cache_email_mapping, env) {
+export async function cacheEmailMappingDeleteByMapping(cache_email_mapping, env) {
     let result = await env.KV.delete(buildKey(cache_email_mapping))
     return result
 }
+
+/**
+ * Deletes the email mapping from the cache when passed a forward-to and gateway address.
+ * @param {Object} cache_email_mapping - The email mapping to delete from the cache.
+ * @param {Object} env - The environment object.
+ * @returns {Promise<boolean>} A promise that resolves to true if the email mapping is successfully deleted, otherwise false.
+ */
+export async function cacheEmailMappingDelete(forward_to, gateway_address, env) {
+    let result = await env.KV.delete(buildKey(gateway_address, forward_to))
+    return result
+}
+
 
 /**
  * Adds a new email mapping to the cache.

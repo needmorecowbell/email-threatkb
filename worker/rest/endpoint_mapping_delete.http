@@ -1,0 +1,6 @@
+POST http://127.0.0.1:8787/mapping/delete
+
+{
+    "forward_to": "test3@gmail.com",
+    "gateway_address": "gateway@domain.com"
+}

@@ -1,7 +1,8 @@
+
 /**
- * handleEmail is the top-level function for any emails that are forwarded to the function. It will ultimately choose to drop or forward based off of what it thinks of the metadata.
- * @param {*} message - The email message object.
- * @param {*} env - The environment object.
+ * Handles the email message by sending it to the processor and handling the metadata.
+ * @param {object} message - The email message object.
+ * @param {object} env - The environment object.
  * @returns {Promise<void>} - A promise that resolves when the email handling is complete.
  */
 export async function handleEmail(message, env) {
