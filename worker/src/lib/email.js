@@ -1,4 +1,4 @@
-import {cacheEmailMappingList} from "./kv"
+import { cacheEmailMappingList } from "./kv"
 /**
  * Handles the email message by sending it to the processor and handling the metadata.
  * @param {object} message - The email message object.
@@ -14,13 +14,12 @@ export async function handleEmail(message, env) {
             "content-type": "application/json;charset=UTF-8",
         }
     };
-    console.debug("Requesting metadata from processor")
-    const response = await fetch(buildURL(env.PROCESSOR_SCHEMA, env.PROCESSOR_HOST, ""), init);
-
+    console.debug("Requesting scan for message...")
+    const response = await fetch(buildURL(env.PROCESSOR_SCHEMA, env.PROCESSOR_HOST, "scan"), init);
     console.debug("Gathering Response from processor")
     const metadata = await gatherResponse(response);
 
-    await handleMetadata(metadata, message,env);
+    await handleMetadata(metadata, message, env);
 }
 
 /**
@@ -46,15 +45,15 @@ export async function gatherResponse(response) {
  * @param {object} env - The environment object.
  * @returns {Promise<void>} - A promise that resolves when the metadata handling is complete.
  */
-export async function handleMetadata(metadata, message,env) {
+export async function handleMetadata(metadata, message, env) {
     console.debug(`Handling metadata: ${metadata}`)
 
     if (metadata.status === "malicious") {
         console.debug("Message is malicious, forwarding to vault: ", env.VAULT_EMAIL)
-        message.forward(env.VAULT_EMAIL);
+        await message.forward(env.VAULT_EMAIL);
     } else {
         console.debug("Message is not malicious, forwarding to gateway: ", env.GATEWAY_EMAIL)
-        await handleEmailForwarding(message,env)
+        await handleEmailForwarding(message, env)
     }
 }
 
@@ -65,15 +64,19 @@ export async function handleMetadata(metadata, message,env) {
  * @param {object} env - The environment object.
  * @returns {void}
  */
-export  async function handleEmailForwarding(message, env){
+export async function handleEmailForwarding(message, env) {
     let mappings = await cacheEmailMappingList(env)
-    mappings.forEach(mapping => {
-        if (mapping.gateway_email === message.to){
-            console.log(`Forwarding message from ${message.from} to ${mapping.forward_email}`)
-            message.forward(mapping.forward_email)
+    console.debug("Message to:", message.to)
+
+
+    for (let i = 0; i < mappings.length; i++) {
+        let mapping = mappings[i]
+        if (mapping.gateway_address === message.to) {
+            console.debug(`Forwarding message from ${message.from} -> ${mapping.forward_to}`)
+            await message.forward(mapping.forward_to)
             return
         }
-    });
+    };
 
     console.debug(`No mapping found for ${message.to}, dropping message...`)
 }
