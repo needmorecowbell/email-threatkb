@@ -4,6 +4,7 @@ import endpointIndex from "../endpoints"
 import { endpointMappingAdd } from "../endpoints/endpoint_mapping_add"
 import { endpointMappingList } from "../endpoints/endpoint_mapping_list"
 import { endpointMappingDelete } from "../endpoints/endpoint_mapping_delete"
+import { endpointMappingGet } from "../endpoints/endpoint_mapping_get"
 import { NotFoundResponse } from "./responses"
 
 /**
@@ -16,6 +17,8 @@ export async function handleRequest(request, env) {
   const router = new Router()
 
   router.get('/', () => endpointIndex(request,env));
+  router.post('/mapping/get', () => endpointMappingGet(request, env));
+  
   router.post('/mapping/add', () => endpointMappingAdd(request, env));
   router.post('/mapping/delete', () => endpointMappingDelete(request, env));
   router.get('/mapping/list', () => endpointMappingList(request, env));

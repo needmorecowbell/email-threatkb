@@ -122,11 +122,18 @@ export async function cacheEmailMappingList(env) {
 export async function cacheEmailMappingGet(gateway_address, forward_to, env) {
     console.debug(`Retrieving email mapping for ${gateway_address} -> ${forward_to}`)
     try {
-        let result = await env.KV.get(buildKey(gateway_address, forward_to))
-        return result
+        let key = buildKey(gateway_address, forward_to)
+        console.debug(`Retrieving mapping from KV with key: ${key}`)
+        let mapping = await env.KV.get(key, { type: "json" })
+        if (mapping === null) {
+            return null
+        }
+        let cacheEmailMapping = CacheEmailMapping(mapping.forward_to, mapping.gateway_address, mapping.date_created)
+
+        return cacheEmailMapping
     } catch (e) {
         console.error(e)
-        throw KVError("Failed to retrieve email mapping:" + e)
+        throw new KVError("Failed to retrieve email mapping:" + e)
     }
 }
 
@@ -158,7 +165,7 @@ export async function cacheEmailMappingDelete(forward_to, gateway_address, env) 
         return result
     } catch (error) {
         console.error(error)
-        throw KVError("Failed to delete email mapping: " + error)
+        throw new KVError("Failed to delete email mapping: " + error)
     }
 }
 
