@@ -7,7 +7,5 @@ kv_namespaces = [
 ]
 [vars]
 GATEWAY_DOMAIN = "domain.com"
-VAULT_EMAIL = "vault@domain.com"
-GATEWAY_EMAIL = "gateway@domain.com"
 PROCESSOR_SCHEMA = "https"
 PROCESSOR_HOST = "processor.domain.com"

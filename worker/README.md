@@ -16,3 +16,10 @@ Setup your kv namespace, set up the server and configure your dns to point at it
 If it doesn't show up you may need to associate first it in the Email -> Email Workers tab.. not sure since I was just using the dashboard at first. 
 
 To set up any email forwarding rules, you'll need to create a mapping using the provided endpoints. see the rest folder for examples. You'll need to add a mapping to your kv. When an email passes through, it will check for the sender address and see if it matches to any of the mappings. Emails will only be forwarded if they are not found to be malicious.
+
+
+## Development 
+
+When testing or developing locally, use `wrangler dev`, or the vscode debugger
+Deploy with `wrangler deploy`
+Watch logs with `wrangler tail eml-funnel`, or other worker name

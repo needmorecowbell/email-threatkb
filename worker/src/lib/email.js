@@ -33,7 +33,7 @@ export async function gatherResponse(response) {
     const contentType = headers.get("content-type") || "";
 
     if (contentType.includes("application/json")) {
-        return JSON.stringify(await response.json());
+        return await response.json();
     }
     return response.text();
 }
@@ -46,13 +46,11 @@ export async function gatherResponse(response) {
  * @returns {Promise<void>} - A promise that resolves when the metadata handling is complete.
  */
 export async function handleMetadata(metadata, message, env) {
-    console.debug(`Handling metadata: ${metadata}`)
-
+    console.debug(`Handling metadata: ${JSON.stringify(metadata)}`)
     if (metadata.status === "malicious") {
-        console.debug("Message is malicious, forwarding to vault: ", env.VAULT_EMAIL)
-        await message.forward(env.VAULT_EMAIL);
+        console.debug("Message is malicious, saved to vault and blocked from forwarding")
     } else {
-        console.debug("Message is not malicious, forwarding to gateway: ", env.GATEWAY_EMAIL)
+        console.debug("Message is not malicious, handling email forwarding")
         await handleEmailForwarding(message, env)
     }
 }
