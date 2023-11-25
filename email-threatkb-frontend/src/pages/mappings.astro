@@ -38,9 +38,13 @@ const mappings = await mappingList()
 			</defs>
 		</svg>
 		<h1>Email Mappings</h1>
-		{
-			console.log(mappings)
-		}
+		<p>
+			Email Mappings are a way to create a custom email address that forwards to your real email address. This is useful for
+			creating a custom email address for a project or service without having to create a new email account.
+		</p>
+		<div  style="text-align: right;">
+			<button class="btn btn-primary">Add Mapping</button>
+		</div>
 		{
 			mappings.map((m:any) => (
 			  <div class="mb-14 md:col-6">

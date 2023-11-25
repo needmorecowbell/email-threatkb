@@ -10,15 +10,6 @@ const mapping = await mappingGet(gateway_address,forward_to);
 
 <Layout title="Email Mappings">
     <main>
-		<svg
-			class="astro-a"
-			width="495"
-			height="623"
-			viewBox="0 0 495 623"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-			aria-hidden="true"
-		>
 			<path
 				fill-rule="evenodd"
 				clip-rule="evenodd"
@@ -59,26 +50,17 @@ const mapping = await mappingGet(gateway_address,forward_to);
 	main {
 		margin: auto;
 		padding: 1rem;
-		width: 800px;
+		width: 80%;
 		max-width: calc(100% - 2rem);
 		color: white;
 		font-size: 20px;
 		line-height: 1.6;
 	}
-	.astro-a {
-		position: absolute;
-		top: -32px;
-		left: 50%;
-		transform: translatex(-50%);
-		width: 220px;
-		height: auto;
-		z-index: -1;
-	}
 	h1 {
 		font-size: 4rem;
 		font-weight: 700;
 		line-height: 1;
-		text-align: center;
+		/* text-align: center; */
 		margin-bottom: 1em;
 	}
 	.text-gradient {

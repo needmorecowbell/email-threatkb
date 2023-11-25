@@ -2,15 +2,18 @@
 interface Props {
 	mapping: any;
 }
-import { buildKey } from "../api/Mappings"
+
 const { mapping } = Astro.props;
 ---
 
-<li class="mapping-card">
+<div class="mapping-card instructions">
+
 	<a href=`/mapping?gateway_address=${mapping.gateway_address}&forward_to=${mapping.forward_to}`>
 		<h2>
-			{mapping.gateway_address+"=>"+mapping.forward_to}
-			<span>&rarr;</span>
+			{mapping.gateway_address}<span>&rarr;</span>{mapping.forward_to}
+			<a onclick="alert('delete mapping')" style="float: right;">
+				<span>&times;</span>
+			</a>
 		</h2>
 	</a>
 		<div class="gateway-address-field">
@@ -18,8 +21,27 @@ const { mapping } = Astro.props;
 			<p><b>Forward To: </b>{mapping.forward_to}</p>
 			<p><b>Date Created: </b>{mapping.date_created}</p>
 		</div>
-</li>
+</div>
+
 <style>
+	.instructions {
+		margin-bottom: 2rem;
+		border: 1px solid rgba(var(--accent-light), 25%);
+		background: linear-gradient(rgba(var(--accent-dark), 66%), rgba(var(--accent-dark), 33%));
+		padding: 1.5rem;
+		border-radius: 8px;
+	}
+	.instructions code {
+		font-size: 0.8em;
+		font-weight: bold;
+		background: rgba(var(--accent-light), 12%);
+		color: rgb(var(--accent-light));
+		border-radius: 4px;
+		padding: 0.3em 0.4em;
+	}
+	.instructions strong {
+		color: rgb(var(--accent-light));
+	}
 	.link-card {
 		list-style: none;
 		display: flex;
@@ -50,16 +72,5 @@ const { mapping } = Astro.props;
 	p {
 		margin-top: 0.5rem;
 		margin-bottom: 0;
-	}
-	.link-card:is(:hover, 
-	</a>
-</li>
-<style>
-	.link-card {:focus-within) {
-		background-position: 0;
-		background-image: var(--accent-gradient);
-	}
-	.link-card:is(:hover, :focus-within) h2 {
-		color: rgb(var(--accent-light));
 	}
 </style>
