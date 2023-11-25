@@ -1,23 +1,23 @@
 ---
 interface Props {
-	title: string;
-	body: string;
-	href: string;
+	mapping: any;
 }
-
-const { href, title, body } = Astro.props;
+import { buildKey } from "../api/Mappings"
+const { mapping } = Astro.props;
 ---
 
-<li class="link-card">
-	<a href={href}>
+<li class="mapping-card">
+	<a href=`/mapping?gateway_address=${mapping.gateway_address}&forward_to=${mapping.forward_to}`>
 		<h2>
-			{title}
+			{mapping.gateway_address+"=>"+mapping.forward_to}
 			<span>&rarr;</span>
 		</h2>
-		<p>
-			{body}
-		</p>
 	</a>
+		<div class="gateway-address-field">
+			<p><b>Gateway Address: </b>{mapping.gateway_address}</p>
+			<p><b>Forward To: </b>{mapping.forward_to}</p>
+			<p><b>Date Created: </b>{mapping.date_created}</p>
+		</div>
 </li>
 <style>
 	.link-card {

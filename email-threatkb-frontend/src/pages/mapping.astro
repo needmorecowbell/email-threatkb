@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
-import { mappingList } from '../api/Mappings';
-import MappingCard from '../components/MappingCard.astro';
+import { mappingGet } from '../api/Mappings';
 
-const mappings = await mappingList()
+const gateway_address = Astro.url.searchParams.get('gateway_address')! || '';
+const forward_to = Astro.url.searchParams.get('forward_to')! || '';
+const mapping = await mappingGet(gateway_address,forward_to);
+
 ---
 
 <Layout title="Email Mappings">
@@ -37,18 +38,20 @@ const mappings = await mappingList()
 				</linearGradient>
 			</defs>
 		</svg>
-		<h1>Email Mappings</h1>
-		{
-			console.log(mappings)
-		}
-		{
-			mappings.map((m:any) => (
-			  <div class="mb-14 md:col-6">
-				<MappingCard mapping={m} />
-			  </div>
-			))
-		  }
-		</ul>
+		<h1>Mapping Stats: {mapping ? `${mapping.gateway_address} -> ${mapping.forward_to}`  : 'No mapping found'}</h1>
+		{mapping && (
+			<div class="instructions">
+				<p>
+					<strong>Gateway Address:</strong> <code>{mapping.gateway_address}</code>
+				</p>
+				<p>
+					<strong>Forward To:</strong> <code>{mapping.forward_to}</code>
+				</p>
+				<p>
+					<strong>Created At:</strong> <code>{mapping.date_created}</code>
+				</p>
+			</div>
+		)}
 	</main>
 </Layout>
 
