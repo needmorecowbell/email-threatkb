@@ -2,6 +2,7 @@
 // interface Props {
 // 	mapping: any;
 // }
+const gateway_placeholder = "@"+Astro.url.host;
 var forward_to = "";
 var gateway_address = "";
 function handleSubmit(event:any) {
@@ -20,12 +21,12 @@ function handleSubmit(event:any) {
     <p>Add a mapping</p>
     <hr />
     <form @submit={handleSubmit}>
-      <label for="key">Forward to:</label>
+      <label for="key" style="margin-right: 60px;">Forward to:</label>
       <input type="text" id="forward_to" value={forward_to} required />
       <br />
   
       <label for="value">Gateway Address:</label>
-      <input type="text" id="gateway_address" value={gateway_address} required />
+      <input type="text" id="gateway_address" value={gateway_address} placeholder={gateway_placeholder} required />
       <br />
       <button type="submit" style="float: right;">Add Mapping</button>
       <br/>
@@ -34,6 +35,18 @@ function handleSubmit(event:any) {
 </div>
 
 <style>
+    
+    .add-mapping-card {
+        width: 100%;
+    }
+    .add-mapping-card input{
+        background-color: rgb(var(--accent-light));
+        border: #23262d;;
+    }
+    .add-mapping-card button{
+        /* make this button larger */
+        font-size: 1.05rem;
+    }
 	.instructions {
 		margin-bottom: 2rem;
 		border: 1px solid rgba(var(--accent-light), 25%);
