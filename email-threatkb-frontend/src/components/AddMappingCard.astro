@@ -2,7 +2,9 @@
 // interface Props {
 // 	mapping: any;
 // }
-const gateway_placeholder = "@"+Astro.url.host;
+const GATEWAY_DOMAIN = import.meta.env.GATEWAY_DOMAIN;
+
+const gateway_placeholder = "@"+GATEWAY_DOMAIN;
 var forward_to = "";
 var gateway_address = "";
 function handleSubmit(event:any) {
