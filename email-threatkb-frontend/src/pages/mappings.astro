@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { mappingList } from '../api/Mappings';
+import AddMappingCard from '../components/AddMappingCard.astro';
 import MappingCard from '../components/MappingCard.astro';
-
 const mappings = await mappingList()
+
 ---
 
 <Layout title="Email Mappings">
@@ -27,9 +28,8 @@ const mappings = await mappingList()
 			Email Mappings are a way to create a custom email address that forwards to your real email address. This is useful for
 			creating a custom email address for a project or service without having to create a new email account.
 		</p>
-		<div  style="text-align: right;">
-			<button class="btn btn-primary">Add Mapping</button>
-		</div>
+
+		<AddMappingCard />
 		{
 			mappings.map((m:any) => (
 			  <div class="mb-14 md:col-6">

@@ -25,6 +25,18 @@ export async function mappingGet(gateway_address, forward_to){
     return mapping.data;
 }
 
+/**
+ * Deletes a mapping from the server.
+ * @param {string} gateway_address - The gateway address.
+ * @param {string} forward_to - The forward address.
+ * @returns {Promise<any>} - A promise that resolves to the response from the worker
+ */
+export async function mappingDelete(gateway_address, forward_to){
+    const init = {method:"POST", body:JSON.stringify({gateway_address:gateway_address,forward_to:forward_to})};
+    const resp = await fetch(`${WORKER_URL}/mapping/delete`, init);
+    return await resp.json();
+}
+
 
 /**
  * Fetches the list of mappings from the server.

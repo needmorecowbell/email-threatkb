@@ -1,36 +1,36 @@
 ---
-interface Props {
-	mapping: any;
+// interface Props {
+// 	mapping: any;
+// }
+var forward_to = "";
+var gateway_address = "";
+function handleSubmit(event:any) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  // Add your logic here to submit the mapping to the cache
+  // For example, you can make an API call to add the mapping
+  console.debug("handle submit",formData);
+  // Reset the form fields
+  forward_to = "";
+  gateway_address = "";
 }
-
-const { mapping } = Astro.props;
-
-// function deleteMapping(gateway_address: string, forward_to: string) {	
-// 	mappingDelete(gateway_address, forward_to).then((response) => {
-// 		if (response.success) {
-// 			console.debug('Mapping deleted successfully')
-// 			window.location.reload();
-// 		}
-// 	})
-// };
-
 ---
 
-<div class="mapping-card instructions">
+<div class="add-mapping-card instructions">
+    <p>Add a mapping</p>
+    <hr />
+    <form @submit={handleSubmit}>
+      <label for="key">Forward to:</label>
+      <input type="text" id="forward_to" value={forward_to} required />
+      <br />
+  
+      <label for="value">Gateway Address:</label>
+      <input type="text" id="gateway_address" value={gateway_address} required />
+      <br />
+      <button type="submit" style="float: right;">Add Mapping</button>
+      <br/>
 
-	<a href=`/mapping?gateway_address=${mapping.gateway_address}&forward_to=${mapping.forward_to}`>
-		<h2>
-			{mapping.gateway_address}<span>&rarr;</span>{mapping.forward_to}
-			<button onclick="{deleteMapping(mapping.gateway_address, mapping.forward_to)}" style="float: right;">
-				<span>&times;</span>
-			</button>
-		</h2>
-	</a>
-		<div class="gateway-address-field">
-			<p><b>Gateway Address: </b>{mapping.gateway_address}</p>
-			<p><b>Forward To: </b>{mapping.forward_to}</p>
-			<p><b>Date Created: </b>{mapping.date_created}</p>
-		</div>
+    </form>
 </div>
 
 <style>

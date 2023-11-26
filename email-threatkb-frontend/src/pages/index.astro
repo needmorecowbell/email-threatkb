@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import AddMappingCard from '../components/AddMappingCard.astro';
 ---
 
 <Layout title="EML ThreatKB">
@@ -24,9 +25,8 @@ import Layout from '../layouts/Layout.astro';
 			</defs>
 		</svg>
 		<h1>Welcome to <span class="text-gradient">EML ThreatKB</span></h1>
-		<p class="instructions">
-			To get started, <a href="/mappings">generate a mapping.</a>
-		</p>
+		<AddMappingCard />
+
 	</main>
 </Layout>
 
