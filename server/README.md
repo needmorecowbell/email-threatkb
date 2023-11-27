@@ -3,6 +3,11 @@
 YARA Processor Server. Just takes in the raw eml and checks it against the yara ruleset, returning a json response. 
 
 ## Usage
+
+- run the latest release file
+
+ or develop locally:
+
 - `go run main.go`
 
 spins up the server, opens an index route with welcome banner and a /scan route which accepts post requests, with the raw eml as byte data.
