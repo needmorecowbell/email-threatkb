@@ -1,4 +1,4 @@
-POST http://127.0.0.1:6000/scan
+POST http://127.0.0.1:8080/scan
 
 Delivered-To: lao@gmail.com
 From: crera <3@gmail.com>
