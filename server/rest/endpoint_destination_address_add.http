@@ -1,5 +1,5 @@
 POST http://127.0.0.1:8080/destination_address/add
 
 {
-	"email": "destination@domain.com"
+	"email": "test@domain.com"
 }

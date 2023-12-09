@@ -20,6 +20,7 @@ func setupRouter() *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Welcome to the eml processor"})
 	})
 	r.POST("/destination_address/add", endpointDestinationAddressAdd)
+	r.POST("/destination_address/list", endpointDestinationAddressList)
 	r.POST("/scan", endpointScan)
 	return r
 }
