@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"os"
 
@@ -17,7 +18,44 @@ func initCFAPI() (*cloudflare.API, error) {
 	return api, nil
 }
 
-func destination_address_list(noFilter bool, verified bool) ([]cloudflare.EmailRoutingDestinationAddress, error) {
+func destinationAddressAdd(email string) (cloudflare.EmailRoutingDestinationAddress, error) {
+	var dest_email cloudflare.EmailRoutingDestinationAddress
+
+	api, err := initCFAPI()
+	if err != nil {
+		return dest_email, err
+	}
+	dest_email, err = api.CreateEmailRoutingDestinationAddress(context.Background(), cloudflare.AccountIdentifier(os.Getenv("CLOUDFLARE_ACCOUNT_ID")), cloudflare.CreateEmailRoutingAddressParameters{Email: email})
+	if err != nil {
+		return dest_email, err
+	}
+	return dest_email, nil
+}
+
+func destinationAddressDelete(email string) (cloudflare.EmailRoutingDestinationAddress, error) {
+	var dest_email cloudflare.EmailRoutingDestinationAddress
+	destinations, err := destinationAddressList(true, false)
+	if err != nil {
+		return dest_email, err
+	}
+	for _, dest := range destinations {
+		if dest.Email == email {
+			api, err := initCFAPI()
+			if err != nil {
+				return dest_email, err
+			}
+			dest_email, err := api.DeleteEmailRoutingDestinationAddress(context.Background(), cloudflare.AccountIdentifier(os.Getenv("CLOUDFLARE_ACCOUNT_ID")), dest.Tag)
+			if err != nil {
+				return dest_email, err
+			}
+			return dest_email, nil
+		}
+	}
+	return dest_email, errors.New("destination address not found")
+
+}
+
+func destinationAddressList(noFilter bool, verified bool) ([]cloudflare.EmailRoutingDestinationAddress, error) {
 	var destinations []cloudflare.EmailRoutingDestinationAddress
 	api, err := initCFAPI()
 	if err != nil {

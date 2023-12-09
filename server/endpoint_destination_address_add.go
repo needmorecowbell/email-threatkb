@@ -1,12 +1,9 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-	"os"
 
-	"github.com/cloudflare/cloudflare-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,13 +26,8 @@ func endpointDestinationAddressAdd(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, GenericErrorResponse{Message: "Bad request, must include email"})
 		return
 	}
-	api, err := initCFAPI()
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, GenericErrorResponse{Message: fmt.Sprintf("Error initializing Cloudflare API: %s", err.Error())})
-		return
-	}
-	dest_email, err := api.CreateEmailRoutingDestinationAddress(context.Background(), cloudflare.AccountIdentifier(os.Getenv("CLOUDFLARE_ACCOUNT_ID")), cloudflare.CreateEmailRoutingAddressParameters{Email: req.Email})
+	dest_email, err := destinationAddressAdd(req.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, GenericErrorResponse{Message: fmt.Sprintf("Error adding destination address: %s", err.Error())})
 		return
