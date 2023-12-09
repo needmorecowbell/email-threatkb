@@ -2,8 +2,10 @@
 package server
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/cloudflare/cloudflare-go"
 	"github.com/gin-gonic/gin"
 	"github.com/hillu/go-yara/v4"
@@ -11,7 +13,10 @@ import (
 
 type EMLServer struct {
 	cf    *cloudflare.API
+	yc    *yara.Compiler
 	rules *yara.Rules
+	r2    *s3.Client
+	r2ctx *context.Context
 }
 
 // NewServer creates a new Server instance.
@@ -21,6 +26,12 @@ func NewServer() *EMLServer {
 	if err != nil {
 		panic(err)
 	}
+
+	err = app.InitR2()
+	if err != nil {
+		panic(err)
+	}
+
 	err = app.InitYARA()
 	if err != nil {
 		panic(err)
@@ -46,5 +57,7 @@ func (s *EMLServer) SetupRouter() *gin.Engine {
 	r.GET("/mapping/list", s.EndpointMappingList)
 
 	r.POST("/scan", s.EndpointScan)
+	r.POST("/yara/add", s.EndpointYARAAdd)
+
 	return r
 }

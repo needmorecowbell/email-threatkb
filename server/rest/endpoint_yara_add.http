@@ -1,0 +1,6 @@
+POST http://127.0.0.1:8080/yara/add
+
+{
+    "name": "DetectMalicious2.yara",
+    "rule": "rule DetectMalicious2 {\n\t\tstrings:\n\t\t$malicious_string = \"malicious_pattern2\"\n\t\tcondition:\n\t\t\t$malicious_string }"
+}

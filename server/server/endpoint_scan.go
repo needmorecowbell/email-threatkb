@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hillu/go-yara/v4"
@@ -43,7 +44,6 @@ func (s *EMLServer) EndpointScan(c *gin.Context) {
 	}
 
 	// spin off a goroutine to send the eml to the cloudflare r2 bucket
-	//go sendEMLToR2(eml_bytes)
+	go s.UploadEMLToVault(time.Now().Format("2006-01-02-15-04-05")+".eml", eml_bytes)
 	c.JSON(http.StatusOK, gin.H{"status": "malicious", "matches": matchStrings})
-
 }
