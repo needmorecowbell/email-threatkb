@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -7,19 +7,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// endpointDestinationAddressGetReq represents the request structure for the
-// endpointDestinationAddressGet function.
+// endpointDestinationAddressGetReq represents the request structure for the EndpointDestinationAddressGet handler.
 type endpointDestinationAddressGetReq struct {
 	Email string `json:"email"`
 }
 
-// endpointDestinationAdressGetResp represents the response structure for the
-// endpointDestinationAddressGet function.
+// endpointDestinationAdressGetResp represents the response structure for the EndpointDestinationAddressGet handler.
 type endpointDestinationAdressGetResp GenericSuccessResponse
 
-// endpointDestinationAddressGet is the handler function for the POST request to
-// retrieve a destination address associated with a given email.
-func endpointDestinationAddressGet(c *gin.Context) {
+// EndpointDestinationAddressGet is the handler function for the GET request to retrieve a destination address.
+// It retrieves the destination addresses and checks if the requested email is associated with any of them.
+// If found, it returns the associated destination address.
+// If not found, it returns a not found error.
+func (s *EMLServer) EndpointDestinationAddressGet(c *gin.Context) {
 	var req endpointDestinationAddressGetReq
 
 	if err := c.BindJSON(&req); err != nil {
@@ -27,7 +27,7 @@ func endpointDestinationAddressGet(c *gin.Context) {
 		return
 	}
 
-	destinations, err := destinationAddressList(true, false)
+	destinations, err := s.DestinationAddressList(true, false)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, GenericErrorResponse{Message: fmt.Sprintf("Error retrieving destination addresses: %s", err.Error())})
 		return

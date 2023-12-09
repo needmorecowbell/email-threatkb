@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"net/http"
@@ -7,30 +7,10 @@ import (
 	"github.com/hillu/go-yara/v4"
 )
 
-// initYARACompiler initializes the YARA compiler and adds a YARA rule for detecting malicious patterns.
-// It returns the YARA compiler instance or an error if initialization fails.
-func initYARACompiler() (*yara.Compiler, error) {
-	yaraCompiler, err := yara.NewCompiler()
-	if err != nil {
-		return nil, err
-	}
-	err = yaraCompiler.AddString(`rule DetectMalicious {
-		strings:
-			$malicious_string = "malicious_pattern"
-		condition:
-			$malicious_string
-	}`, "rules")
-
-	if err != nil {
-		return nil, err
-	}
-	return yaraCompiler, nil
-}
-
 // endpointScan is the handler function for the "/scan" endpoint.
 // It scans the eml file received in the request body for malicious patterns using YARA rules.
 // It returns the scan result as a JSON response.
-func endpointScan(c *gin.Context) {
+func (s *EMLServer) EndpointScan(c *gin.Context) {
 	// get the eml from the body
 	eml_bytes, err := c.GetRawData()
 
@@ -38,18 +18,8 @@ func endpointScan(c *gin.Context) {
 		c.String(http.StatusBadRequest, "Error gathering eml from body")
 		return
 	}
-	yc, err := initYARACompiler()
-	if err != nil {
-		c.String(http.StatusInternalServerError, "Error compiling rules")
-		return
-	}
-	yaraRules, err := yc.GetRules()
-	if err != nil {
-		c.String(http.StatusInternalServerError, "Error retrieving compiled rules")
-		return
-	}
 
-	scanner, err := yara.NewScanner(yaraRules)
+	scanner, err := yara.NewScanner(s.rules)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Error creating scanner from rules")
 		return

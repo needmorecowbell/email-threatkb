@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -7,17 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// endpointDestinationAddressDeleteReq represents the request body for the endpointDestinationAddressDelete handler.
+// endpointDestinationAddressDeleteReq represents the request structure for deleting a destination address.
 type endpointDestinationAddressDeleteReq struct {
 	Email string `json:"email"`
 }
 
-// endpointDestinationAdressDeleteResp represents the response body for the endpointDestinationAddressDelete handler.
+// endpointDestinationAdressDeleteResp represents the response structure for deleting a destination address.
 type endpointDestinationAdressDeleteResp GenericSuccessResponse
 
-// endpointDestinationAddressDelete is the handler function for the DELETE /destination_address/delete endpoint.
-// It deletes the specified destination address and returns the deleted destination address in the response.
-func endpointDestinationAddressDelete(c *gin.Context) {
+// EndpointDestinationAddressDelete is the handler function for deleting a destination address.
+func (s *EMLServer) EndpointDestinationAddressDelete(c *gin.Context) {
 	var req endpointDestinationAddressDeleteReq
 
 	if err := c.BindJSON(&req); err != nil {
@@ -25,7 +24,7 @@ func endpointDestinationAddressDelete(c *gin.Context) {
 		return
 	}
 
-	deleted_dest, err := destinationAddressDelete(req.Email)
+	deleted_dest, err := s.DestinationAddressDelete(req.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, GenericErrorResponse{Message: fmt.Sprintf("Error deleting destination address: %s", err.Error())})
 		return

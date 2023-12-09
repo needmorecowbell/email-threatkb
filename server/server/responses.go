@@ -1,4 +1,4 @@
-package main
+package server
 
 // GenericSuccessResponse represents a generic success response.
 type GenericSuccessResponse struct {

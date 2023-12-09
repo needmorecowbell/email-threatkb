@@ -5,38 +5,15 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/needmorecowbell/email_threatkb/server/server"
 )
-
-// setupRouter sets up the server router with the necessary endpoints and handlers.
-// It returns the configured gin.Engine instance.
-func setupRouter() *gin.Engine {
-	r := gin.Default()
-
-	// Ping test
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Welcome to the eml processor"})
-	})
-	r.POST("/destination_address/add", endpointDestinationAddressAdd)
-	r.DELETE("/destination_address/delete", endpointDestinationAddressDelete)
-	r.POST("/destination_address/get", endpointDestinationAddressGet)
-	r.POST("/destination_address/list", endpointDestinationAddressList)
-	r.POST("/destination_address/verified", endpointDestinationAddressVerifiedCheck)
-
-	r.GET("/mapping/list", endpointMappingList)
-
-	r.POST("/scan", endpointScan)
-	return r
-}
 
 // main is the entry point for the eml processor server.
 // It initializes the server router and starts the server.
 func main() {
-	log.Println("Starting eml processor")
-	r := setupRouter()
+	s := server.NewServer()
+	r := s.SetupRouter()
 	r.Run(fmt.Sprintf(":%s", os.Getenv("EML_SERVER_PORT")))
 }

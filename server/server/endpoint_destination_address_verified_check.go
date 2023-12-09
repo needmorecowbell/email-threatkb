@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -7,20 +7,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// endpointDestinationAddressDeleteReq represents the request body for the endpointDestinationAddressDelete handler.
+// endpointDestinationAddressVerifiedCheckReq represents the request structure for the EndpointDestinationAddressVerifiedCheck endpoint.
 type endpointDestinationAddressVerifiedCheckReq struct {
 	Email string `json:"email"`
 }
 
-// endpointDestinationAdressDeleteResp represents the response body for the endpointDestinationAddressDelete handler.
+// endpointDestinationAdressVerifiedCheckResp represents the response structure for the EndpointDestinationAddressVerifiedCheck endpoint.
 type endpointDestinationAdressVerifiedCheckResp struct {
 	GenericSuccessResponse
 	Verified bool `json:"verified"`
 }
 
-// endpointDestinationAddressDelete is the handler function for the DELETE /destination_address/delete endpoint.
-// It deletes the specified destination address and returns the deleted destination address in the response.
-func endpointDestinationAddressVerifiedCheck(c *gin.Context) {
+// EndpointDestinationAddressVerifiedCheck is the handler function for the EndpointDestinationAddressVerifiedCheck endpoint.
+// It checks if the destination address is verified and returns the result.
+func (s *EMLServer) EndpointDestinationAddressVerifiedCheck(c *gin.Context) {
 	var req endpointDestinationAddressVerifiedCheckReq
 	var resp endpointDestinationAdressVerifiedCheckResp
 	if err := c.BindJSON(&req); err != nil {
@@ -28,7 +28,7 @@ func endpointDestinationAddressVerifiedCheck(c *gin.Context) {
 		return
 	}
 
-	verified, err := isDestinationAddressVerified(req.Email)
+	verified, err := s.IsDestinationAddressVerified(req.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, GenericErrorResponse{Message: fmt.Sprintf("Error deleting destination address: %s", err.Error())})
 		return
