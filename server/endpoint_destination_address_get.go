@@ -7,12 +7,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// endpointDestinationAddressGetReq represents the request structure for the
+// endpointDestinationAddressGet function.
 type endpointDestinationAddressGetReq struct {
 	Email string `json:"email"`
 }
 
+// endpointDestinationAdressGetResp represents the response structure for the
+// endpointDestinationAddressGet function.
 type endpointDestinationAdressGetResp GenericSuccessResponse
 
+// endpointDestinationAddressGet is the handler function for the POST request to
+// retrieve a destination address associated with a given email.
 func endpointDestinationAddressGet(c *gin.Context) {
 	var req endpointDestinationAddressGetReq
 

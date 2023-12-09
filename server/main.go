@@ -4,8 +4,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,6 +34,5 @@ func setupRouter() *gin.Engine {
 func main() {
 	log.Println("Starting eml processor")
 	r := setupRouter()
-	// Listen and Server in 0.0.0.0:8080
-	r.Run(":8080")
+	r.Run(fmt.Sprintf(":%s", os.Getenv("EML_SERVER_PORT")))
 }

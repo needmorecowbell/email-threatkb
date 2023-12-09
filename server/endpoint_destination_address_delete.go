@@ -7,12 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// endpointDestinationAddressDeleteReq represents the request body for the endpointDestinationAddressDelete handler.
 type endpointDestinationAddressDeleteReq struct {
 	Email string `json:"email"`
 }
 
+// endpointDestinationAdressDeleteResp represents the response body for the endpointDestinationAddressDelete handler.
 type endpointDestinationAdressDeleteResp GenericSuccessResponse
 
+// endpointDestinationAddressDelete is the handler function for the DELETE /destination_address/delete endpoint.
+// It deletes the specified destination address and returns the deleted destination address in the response.
 func endpointDestinationAddressDelete(c *gin.Context) {
 	var req endpointDestinationAddressDeleteReq
 
