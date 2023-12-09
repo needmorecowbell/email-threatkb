@@ -25,6 +25,10 @@ func setupRouter() *gin.Engine {
 	r.DELETE("/destination_address/delete", endpointDestinationAddressDelete)
 	r.POST("/destination_address/get", endpointDestinationAddressGet)
 	r.POST("/destination_address/list", endpointDestinationAddressList)
+	r.POST("/destination_address/verified", endpointDestinationAddressVerifiedCheck)
+
+	r.GET("/mapping/list", endpointMappingList)
+
 	r.POST("/scan", endpointScan)
 	return r
 }

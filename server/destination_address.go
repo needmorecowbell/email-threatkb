@@ -24,6 +24,35 @@ func destinationAddressAdd(email string) (cloudflare.EmailRoutingDestinationAddr
 	return dest_email, nil
 }
 
+// destinationAddressGet retrieves the email routing destination address for the given email.
+// It searches for the destination address in the list of destinations and returns it if found.
+// If the destination address is not found, it returns an error.
+func destinationAddressGet(email string) (cloudflare.EmailRoutingDestinationAddress, error) {
+	var dest_email cloudflare.EmailRoutingDestinationAddress
+	destinations, err := destinationAddressList(true, false)
+	if err != nil {
+		return dest_email, err
+	}
+	for _, dest := range destinations {
+		if dest.Email == email {
+			return dest, nil
+		}
+	}
+	return dest_email, errors.New("destination address not found")
+}
+
+// isDestinationAddressVerified checks if the destination address is verified.
+// It retrieves the destination address using the provided email and returns
+// true if the address is verified, false otherwise. An error is returned if
+// there was a problem retrieving the destination address.
+func isDestinationAddressVerified(email string) (bool, error) {
+	destination, err := destinationAddressGet(email)
+	if err != nil {
+		return false, err
+	}
+	return destination.Verified != nil, nil
+}
+
 // destinationAddressDelete deletes the email routing destination address associated with the given email.
 // It returns the deleted destination address and an error, if any.
 func destinationAddressDelete(email string) (cloudflare.EmailRoutingDestinationAddress, error) {
